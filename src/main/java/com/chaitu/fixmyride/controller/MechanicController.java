@@ -20,7 +20,14 @@ public class MechanicController {
     private MechanicService service;
 
     @GetMapping("/mechanics")
-    public ResponseEntity<List<Mechanic>> getAllMechanics(){
+    public ResponseEntity<List<Mechanic>> getMechanics(
+            @RequestParam(required = false) String mechanicId) {
+
+        if (mechanicId != null) {
+            List<Mechanic> mechanics = service.getmechanicByMechanicId(mechanicId);
+            return new ResponseEntity<>(mechanics, HttpStatus.OK);
+        }
+
         return new ResponseEntity<>(service.getAllMechanics(), HttpStatus.OK);
     }
 

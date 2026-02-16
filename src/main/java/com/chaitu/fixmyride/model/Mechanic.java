@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class Mechanic {
     @Id
-    private int mechanic_id;
+    @Column(name = "mechanic_id")
+    private int mechanicId;
     private String name;
     private String phone_number;
     private String skills;

@@ -1,6 +1,7 @@
 package com.chaitu.fixmyride.service;
 
 import com.chaitu.fixmyride.model.Mechanic;
+import com.chaitu.fixmyride.model.User;
 import com.chaitu.fixmyride.repo.MechanicRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,5 +28,8 @@ public class MechanicService {
 
     public Mechanic getMechanicByEmail(String email){
         return repo.findByEmail(email);
+    }
+    public List<Mechanic> getmechanicByMechanicId(String mechanicId) {
+        return repo.findByMechanicId(mechanicId);
     }
 }
