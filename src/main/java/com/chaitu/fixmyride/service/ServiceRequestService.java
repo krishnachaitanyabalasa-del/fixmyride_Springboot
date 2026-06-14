@@ -13,55 +13,52 @@ public class ServiceRequestService {
     @Autowired
     private ServiceRequestRepo repo;
 
-    // Get all service requests
     public List<ServiceRequest> getAllRequests() {
         return repo.findAll();
     }
 
-    // Get service request by ID
     public ServiceRequest getRequestById(int id) {
         return repo.findById(id).orElse(null);
     }
 
-    // Create new service request
     public ServiceRequest addRequest(ServiceRequest request) {
         System.out.println("SAVING TO DB >>> " + request);
         return repo.save(request);
     }
 
-    // Update selected fields (PUT)
-    public ServiceRequest updateRequest(int id, ServiceRequest request) {
+    public ServiceRequest updateRequest(
+            int id,
+            ServiceRequest request) {
+        System.out.println("Received Request = " + request);
+        System.out.println("Assigned Mechanic = " +
+                request.getAssigned_mechanic_id());
 
-        ServiceRequest existing = repo.findById(id).orElse(null);
+        ServiceRequest existing =
+                repo.findById(id).orElse(null);
 
         if (existing == null) {
             return null;
         }
 
-        // Update only allowed fields
-        if (request.getProblem_description() != null) {
-            existing.setProblem_description(request.getProblem_description());
-        }
+        existing.setProblem_description(request.getProblem_description());
+        existing.setStatus(request.getStatus());
+        existing.setAssigned_mechanic_id(request.getAssigned_mechanic_id());
+        existing.setAmount(request.getAmount());
+        existing.setPayment_status(request.getPayment_status());
 
-        if (request.getStatus() != null) {
-            existing.setStatus(request.getStatus());
-        }
-
-        if (request.getAssigned_mechanic_id() != 0) {
-            existing.setAssigned_mechanic_id(request.getAssigned_mechanic_id());
-        }
-
-        if (request.getAmount() != 0) {
-            existing.setAmount(request.getAmount());
-        }
-
-        if (request.getPayment_status() != null) {
-            existing.setPayment_status(request.getPayment_status());
-        }
 
         return repo.save(existing);
     }
+    public List<ServiceRequest> getPendingRequests() {
+        return repo.findByStatus("Pending");
+    }
+    public List<ServiceRequest> getRequestsByUsername(String username){
+        return repo.findByUsername(username);
+    }
 
+    public List<ServiceRequest> getRequestsByMechanic(String mechanicId) {
+        return repo.findByAssignedMechanicId(mechanicId);
+    }
     public void deleteRequestById(int id) {
         repo.deleteById(id);
     }

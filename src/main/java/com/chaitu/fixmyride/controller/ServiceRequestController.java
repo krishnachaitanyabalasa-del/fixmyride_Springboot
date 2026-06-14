@@ -34,6 +34,17 @@ public class ServiceRequestController {
         }
     }
 
+
+    @GetMapping("/requests/mechanic/{username}")
+    public ResponseEntity<List<ServiceRequest>> getRequestsByMechanic(
+            @PathVariable String username) {
+
+        List<ServiceRequest> requests =
+                service.getRequestsByMechanic(username);
+
+        return ResponseEntity.ok(requests);
+    }
+
     // 3️⃣ Create a new service request
     @PostMapping("/request")
     public ResponseEntity<?> addRequest(@RequestBody ServiceRequest request) {
@@ -46,7 +57,7 @@ public class ServiceRequestController {
         }
     }
 
-    @PutMapping("/request/{id}")
+    @PutMapping("/requests/{id}")
     public ResponseEntity<String> updateRequest(
             @PathVariable int id,
             @RequestBody ServiceRequest request) {
@@ -60,7 +71,7 @@ public class ServiceRequestController {
         }
     }
 
-    @DeleteMapping("/request/{id}")
+    @DeleteMapping("/requests/{id}")
     public ResponseEntity<String> deleteRequestById(@PathVariable int id){
         ServiceRequest request1 = service.getRequestById(id);
         if(request1!=null){
@@ -69,6 +80,24 @@ public class ServiceRequestController {
         }else{
             return new ResponseEntity<>("Request not found",HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/pending-requests")
+    public ResponseEntity<List<ServiceRequest>> getPendingRequests() {
+
+        List<ServiceRequest> pendingRequests = service.getPendingRequests();
+
+        return new ResponseEntity<>(pendingRequests, HttpStatus.OK);
+    }
+
+    @GetMapping("/requests/user/{username}")
+    public ResponseEntity<List<ServiceRequest>> getRequestsByUsername(
+            @PathVariable String username){
+
+        return new ResponseEntity<>(
+                service.getRequestsByUsername(username),
+                HttpStatus.OK
+        );
     }
 
 

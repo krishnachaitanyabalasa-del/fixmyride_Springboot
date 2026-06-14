@@ -41,8 +41,24 @@ public class PaymentController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    @PutMapping("/payments/{id}")
+    public ResponseEntity<?> updatePayment(@PathVariable int id,
+                                           @RequestBody Payment payment) {
+        try {
+            Payment updatedPayment = service.updatePayment(id, payment);
 
-    @DeleteMapping("/payment/{id}")
+            if (updatedPayment != null) {
+                return new ResponseEntity<>(updatedPayment, HttpStatus.OK);
+            }
+
+            return new ResponseEntity<>("Payment not found", HttpStatus.NOT_FOUND);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/payments/{id}")
     public ResponseEntity<String> deletePayment(@PathVariable int id) {
         Payment payment = service.getPaymentById(id);
         if (payment != null) {

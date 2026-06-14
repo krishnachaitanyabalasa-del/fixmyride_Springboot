@@ -9,7 +9,15 @@ import java.util.List;
 
 @Repository
 public interface MechanicRepo extends JpaRepository<Mechanic,Integer> {
+    boolean existsByUsername(String username);
     Mechanic findByEmail(String email);
-    List<Mechanic> findByMechanicId(String mechanicId);
+    Mechanic findByUsername(String username);
+    List<Mechanic> findByStatus(String status);
+    List<Mechanic> findByAvailabilityStatusAndStatus(
+            boolean availabilityStatus,
+            String status
+    );
+
+
 
 }

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -23,21 +24,23 @@ public class UserController {
             @RequestParam(required = false) String username) {
 
         if (username != null) {
-            List<User> users = service.getUserByUsername(username);
+            List<User> users = Collections.singletonList(service.getUserByUsername(username));
             return new ResponseEntity<>(users, HttpStatus.OK);
         }
 
         return new ResponseEntity<>(service.getAllUsers(), HttpStatus.OK);
     }
 
-    @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable int id){
-        User user = service.getUserById(id);
-        if(user!=null){
-            return new ResponseEntity<>(service.getUserById(id),HttpStatus.OK);
-        }else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @GetMapping("/users/{username}")
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+
+        User user = service.getUserByUsername(username);
+
+        if(user != null){
+            return new ResponseEntity<>(user, HttpStatus.OK);
         }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping("/user")
@@ -51,21 +54,34 @@ public class UserController {
     }
 
     @PostMapping("/user/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginUser) {
+    public ResponseEntity<String> login(
+            @RequestBody LoginRequest loginRequest) {
 
-        User dbUser = service.getUserByEmail(loginUser.getEmail());
+        System.out.println("LOGIN API HIT");
 
-        if (dbUser == null) {
-            return new ResponseEntity<>("Invalid email or password",
+        String token = service.verify(
+                loginRequest.getUsername(),
+                loginRequest.getPassword());
+
+        if(token.equals("usernameNotFound")){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Username not found");
+        }
+
+        if(token.equals("passwordWrong")){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Incorrect password");
+        }
+
+
+
+        if(token.equals("failed")) {
+            return new ResponseEntity<>(
+                    "Invalid username or password",
                     HttpStatus.UNAUTHORIZED);
         }
 
-        if (!dbUser.getPassword().equals(loginUser.getPassword())) {
-            return new ResponseEntity<>("Invalid email or password",
-                    HttpStatus.UNAUTHORIZED);
-        }
-
-        return new ResponseEntity<>(dbUser, HttpStatus.OK);
+        return ResponseEntity.ok(token);
     }
 
 
